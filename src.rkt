@@ -29,8 +29,39 @@
          (else
           (getGrafo_aux i (+ j 1) (append fila (list -1))))))
 
+>(define (anadirAlGrafo idAgregar ids pesos bi)
+   (cond ((or (< idAgregar 1) (null? ids) (null? pesos) (null? bi))
+          grafo)
+         (else
+          (anadirAlGrafo_aux idAgregar ids pesos bi 1 '() ids pesos))))
+
+>(define (anadirAlGrafo_aux idAgregar ids pesos bi j fila rIds rPesos)
+   (cond ((= j idAgregar)
+          (begin
+            (set! grafo (append grafo (list (append fila (list 0)))))
+            (anadirAlGrafo_aux2 idAgregar rIds rPesos bi '() 1 rIds rPesos bi grafo)))
+         ((null? ids)
+          (anadirAlGrafo_aux idAgregar rIds rPesos bi (+ j 1) (append fila (list -1)) rIds rPesos))
+         ((= j (car ids))
+          (anadirAlGrafo_aux idAgregar rIds rPesos bi (+ j 1) (append fila (list (car pesos))) rIds rPesos))
+         (else
+          (anadirAlGrafo_aux idAgregar (cdr ids) (cdr pesos) bi j fila rIds rPesos))))
+          
+>(define (anadirAlGrafo_aux2 idAgregar ids pesos bi nGrafo i rIds rPesos rBi rGrafo)
+   (cond ((= i idAgregar)
+          (begin
+            (set! grafo (append nGrafo (list (car rGrafo))))))
+         (else
+          (begin
+            (cond ((null? ids)
+                   (anadirAlGrafo_aux2 idAgregar rIds rPesos rBi (append nGrafo (list (append (car rGrafo) (list -1)))) (+ i 1) rIds rPesos rBi (cdr rGrafo)))
+                  ((and (= i (car ids)) (= 1 (car bi)))
+                   (anadirAlGrafo_aux2 idAgregar rIds rPesos rBi (append nGrafo (list (append (car rGrafo) (list (car pesos))))) (+ i 1) rIds rPesos rBi (cdr rGrafo)))
+                  (else
+                   (anadirAlGrafo_aux2 idAgregar (cdr ids) (cdr pesos) (cdr bi) nGrafo i rIds rPesos rBi rGrafo)))))))
+
 >(define (revisarAdyacentes nodo)
-   (cond ((or (< nodo 1) (> nodo 15))
+   (cond ((< nodo 1)
           '())
          (else
           (revisarAdyacentes_aux nodo 1 grafo))))
@@ -69,6 +100,11 @@
          (else
           (revisarPeso_aux2 n1 n2 (+ j 1) (cdr fila)))))
 
+>(anadirAlGrafo 1 '(0) '(0) '(0))
+>(anadirAlGrafo 2 '(1) '(70) '(0))
+>(anadirAlGrafo 3 '(1 2) '(90 76) '(0 1))
+>(anadirAlGrafo 4 '(3) '(12) '(0))
+>(anadirAlGrafo 5 '(1 2 4) '(10 23 34) '(1 1 1))
 >(getGrafo)
->(revisarAdyacentes 1)
->(revisarPeso 1 5)
+>(revisarAdyacentes 5)
+>(revisarPeso 3 4)
