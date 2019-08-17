@@ -1,0 +1,26 @@
+#lang racket/gui
+
+; colors
+;
+(define white (make-object color% "white"))
+(define black (make-object color% "black"))
+(define red   (make-object color% "red"))
+(define blue (make-object color% "blue"))
+
+(define (dibujar-linea x y x2 y2 canvas  color grosor)
+  (define lapiz (instantiate pen% (color grosor 'solid)))
+  (define dc (send canvas get-dc))
+  (send dc set-pen lapiz)
+  (send dc draw-line x y x2 y2)
+  
+)
+
+  ; Make a 300 x 300 frame
+  (define frame (new frame% [label "Pantalla de Mapa "]
+                            [width 800]
+                            [height 800]))
+  ; Make the drawing area
+  (define mapa (new canvas% [parent frame]))
+  ; Get the canvas's drawing context
+
+  (send frame show #t)
