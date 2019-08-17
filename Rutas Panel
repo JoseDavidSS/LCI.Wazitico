@@ -1,12 +1,22 @@
 #lang racket/gui
 
-; colors
+; ESTOS SON LOS COLORES QUE MANTENDRAN DISPONIUBLES PARA DIBUJAR 
 ;
 (define white (make-object color% "white"))
 (define black (make-object color% "black"))
 (define red   (make-object color% "red"))
 (define blue (make-object color% "blue"))
 
+;;ESTE ES EL METODO QUE DIBUJA UN TEXTO EN EL CANVAS
+(define (dibujar-texto  x y  size canvas texto )
+  (define dc (send canvas get-dc))
+  (send dc set-scale size size)
+  (send dc set-text-foreground "blue")
+  (send dc draw-text texto x y)
+)
+
+
+;; ESTE ES EL METODO PARA DIBUJAR LA LINEA DE LAS RUTAS 
 (define (dibujar-linea x y x2 y2 canvas  color grosor)
   (define lapiz (instantiate pen% (color grosor 'solid)))
   (define dc (send canvas get-dc))
