@@ -23,10 +23,10 @@
                    (send dc draw-bitmap bmp 0 0)
                    (or (send dc get-bitmap) (bitmap-blank)))])]))
 
-;-------------------------Main Menu-------------------------;
+;-------------------------Main Menu;
 
 ; Main menu Screen
-(define menuScreen (new frame% [label "Wazecheme"]
+(define menuScreen (new frame% [label "Wazitico"]
                    [width 800]
                    [height 600]
                    [style '(no-resize-border)]))
@@ -43,7 +43,9 @@
 (define selectBackground (make-object bitmap% "assets/background_citySelect.png"))
 (define startButtonIcon (make-object bitmap% "/home/jose/Desktop/Racket/Wazecheme/assets/start_button.png"))
 
-; Menu panel
+";_______________________________________________________________________Menu Screen;"
+
+; Build the Main Menu frame
 (define menuPanel (new panel% [parent menuScreen]
                              [border 0]
                              [vert-margin 0]
@@ -57,51 +59,83 @@
         (else
          (send menuScreen show #f))))
 
-; Changes screen to city selection
-(define (toMapScreen)
-  (send menuScreen show #f)
-  (send mapScreen show #t))
+; Changes Frame to MapScreen from ConfigurationScreen
+(define (toMapFromMenuScreen)
+  (send mapScreen show #t)
+  (showMenu #f))
 
-; Change screen to city selection button
+; Changes from MenuScreen to MapScreen
 (new button% [parent menuPanel]
              [label (bitmap-scale startButtonIcon 0.6)]
              [callback (lambda (button event)
-                         (toMapScreen))])
+                         (toMapFromMenuScreen))])
 
-;-------------------------Map Screen-------------------------;
+";_______________________________________________________________________Map Screen;"
 
-; City select screen
-(define mapScreen (new frame% [label "Wazecheme"]
+; Build the Map frame
+(define mapScreen (new frame% [label "Wazitico"]
                                      [width 800]
                                      [height 600]))
 
-; City select panels
+; Map panel
 (define mapPanel (new pane% [parent mapScreen]
                                      [border 0]
                                      [spacing 0]
                                      [vert-margin 0]
                                      [alignment '(center center)]))
-
-(define search-box (new text-field% [parent mapScreen]
-                                    [label #f]))
-
-(define search-box2 (new text-field% [parent mapScreen]
-                                     [label #f]))
-
+; Map canvas
 (define canvas (new canvas% [parent mapPanel]))
 
 
-(define msg (new message% [parent mapScreen]
-                          [label "No events so far..."]))
+;(define msg (new message% [parent mapScreen]
+;                          [label "No events so far..."]))
 
-; Make a button in the frame
+; Changes from ConfigurationScreen to MapScreen 
+(define (toMenuFromMapScreen)
+  (send mapScreen show #f)
+  (showMenu #t))
+
+; Make a button in the Map frame to return to the Menu
 (new button% [parent mapScreen]
-             [label "Click Me"]
+             [label "Return to Menu"]
              [callback (lambda (button event)
-                         (send msg set-label "Button click"))])
+                         (toMenuFromMapScreen))])
 
+; Changes frame from MapScreen to ConfigurationScreen
+(define (toConfigFromMapScreen)
+  (send mapScreen show #f)
+  (send configScreen show #t))
 
+; Changes frame from ConfigurationScreen to MapScreen button
+(new button% [parent mapScreen]
+             [label "Add Items"]
+             [callback (lambda (button event)
+                         (toConfigFromMapScreen))])
 
-;----ACTIONS----;
+";_______________________________________________________________________Configuration Screen;"
+
+; Config Screen
+(define configScreen (new frame% [label "Wazitico"]
+                                     [width 800]
+                                     [height 600]))
+
+; Changes Frame to MapScreen from ConfigurationScreen
+(define (toMapFromConfigScreen)
+  (send mapScreen show #t)
+  (send configScreen show #f))
+
+(define search-box (new text-field% [parent configScreen]
+                                    [label #f]))
+
+(define search-box2 (new text-field% [parent configScreen]
+                                     [label #f]))
+
+; Returns from ConfigScreen to MapScreen
+(new button% [parent configScreen]
+             [label (bitmap-scale startButtonIcon 0.6)]
+             [callback (lambda (button event)
+                         (toMapFromConfigScreen))])
+
+";_______________________________________________________________________Run;"
 
 (showMenu #t)
