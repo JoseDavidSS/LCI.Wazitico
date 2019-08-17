@@ -7,6 +7,13 @@
 (define red   (make-object color% "red"))
 (define blue (make-object color% "blue"))
 
+  ; algunos la`ices y brochas
+(define no-pen (make-object pen% "BLACK" 1 'transparent))
+(define no-brush (make-object brush% "BLACK" 'transparent))
+(define blue-brush (make-object brush% "BLUE" 'solid))
+(define yellow-brush (make-object brush% "YELLOW" 'solid))
+(define red-pen (make-object pen% "RED" 2 'solid))
+
 ;;ESTE ES EL METODO QUE DIBUJA UN TEXTO EN EL CANVAS
 (define (dibujar-texto  x y  size canvas texto )
   (define dc (send canvas get-dc))
@@ -14,7 +21,15 @@
   (send dc set-text-foreground "blue")
   (send dc draw-text texto x y)
 )
-
+;;ESTE ES EL METODO  QUE REALIZA LOS NODOS CON CIERTO TAMAÑO Y CIERTO  TEXTO EN ELLOS 
+(define (dibujar-nodo x y radio canvas texto)
+  (define dc (send canvas get-dc))
+  (send dc set-pen no-pen)
+  (send dc set-brush yellow-brush)
+  (send dc draw-ellipse x y radio radio)
+  (dibujar-texto x (+ y (/ radio 2)) 1 canvas texto)
+  
+  )
 
 ;; ESTE ES EL METODO PARA DIBUJAR LA LINEA DE LAS RUTAS 
 (define (dibujar-linea x y x2 y2 canvas  color grosor)
