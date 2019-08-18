@@ -1,5 +1,6 @@
-#lang racket/base
-
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname Logic) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
 ;Variable del grafo
 >(define grafo null)
 
@@ -254,4 +255,16 @@
           (cons (list distanciaARecorrer) (list caminoFinal)))
          (else
           (dijkstra_aux4 numNodos inicio (buscarElemento 1 fin caminos) distancias caminos (append (list fin) caminoFinal) distanciaARecorrer))))
-(provide (all-defined-out))
+
+>(anadirAlGrafo 1 '(0) '(0) '(0))
+>(anadirAlGrafo 2 '(1) '(70) '(0))
+>(anadirAlGrafo 3 '(1 2) '(90 76) '(0 1))
+>(anadirAlGrafo 4 '(3 2) '(12 65) '(0 1))
+>(anadirAlGrafo 5 '(1 2 4) '(10 23 34) '(1 1 1))
+>(getGrafo)
+>(revisarAdyacentes 5)
+>(revisarPeso 3 4)
+>(listaIds)
+>(infoNodo 5)
+>(largoGrafo)
+>(dijkstra 3 4)
