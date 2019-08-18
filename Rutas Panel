@@ -18,11 +18,26 @@
     (define posicion-y   (first(rest(rest valores) )))
     (dibujar-nodo posicion-x posicion-y 100 mapa nombre-del-nodo)
     (dibujar-nodos ( - cantidad-de-nodos-restantes 1))
-   
   ]
    [else  '()])
 
   )
+;;Funcion necesarias para obtener x y de un nodo
+(define (dame-posiciones nodo-buscar)
+   (rest(hash-ref nodos (number->string nodo-buscar)))
+  )
+;;Esta funcion es la dibujara la mejor ruta
+(define (dibujar-mejor-ruta  lista-mejores)
+  (cond
+    [(not(null?  (rest lista-mejores)))
+     (define nodo-inicial (first lista-mejores))
+     (define nodo-final (first(rest lista-mejores)))
+     (define pos-inicial (dame-posiciones nodo-inicial))
+     (define pos-final (dame-posiciones nodo-final))
+     (dibujar-linea (first pos-inicial) (first(rest pos-inicial))(first pos-final)(first(rest pos-final)) mapa "RED" 13)
+     (dibujar-mejor-ruta (rest lista-mejores))
+     ]
+    [else '()]))
 ; ESTOS SON LOS COLORES QUE MANTENDRAN DISPONIUBLES PARA DIBUJAR 
 ;
 
