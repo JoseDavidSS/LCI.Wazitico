@@ -1,8 +1,10 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-advanced-reader.ss" "lang")((modname Logic) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
+;Variable del grafo
 >(define grafo null)
 
+;Función que se encarga de retornar el grafo actual
 >(define (getGrafo)
    (cond ((null? grafo)
          (getGrafo_aux 1 1 '()))
@@ -29,6 +31,9 @@
          (else
           (getGrafo_aux i (+ j 1) (append fila (list -1))))))
 
+;Función que se encarga de añadir un nodo al grafo
+;Recibe como argumentos el id del grafo a agregar, una lista con las ids de los nodos a los que va a estar conectado,
+;una lista con los pesos que van a tener cada arista entre nodos y una última lista indicando si la conexión va a ser bidireccional.
 >(define (anadirAlGrafo idAgregar ids pesos bi)
    (cond ((or (< idAgregar 1) (null? ids) (null? pesos) (null? bi))
           grafo)
@@ -60,6 +65,7 @@
                   (else
                    (anadirAlGrafo_aux2 idAgregar (cdr ids) (cdr pesos) (cdr bi) nGrafo i rIds rPesos rBi rGrafo)))))))
 
+;Función que recibe una id de un nodo y retorna una lista con todos los nodos adyacentes a este, incluyendose a si mismo
 >(define (revisarAdyacentes nodo)
    (cond ((or (< nodo 1) (> nodo (largoGrafo)))
           '())
@@ -80,6 +86,7 @@
          (else
           (revisarAdyacentes_aux2 (cdr fila) adj (+ j 1)))))
 
+;Función que recibe 2 ids de dos nodos y retorna cuál es el peso que tiene la arista entre ellos.
 >(define (revisarPeso nodo1 nodo2)
    (cond ((or (< nodo1 1) (< nodo2 1) (> nodo1 (largoGrafo)) (> nodo2 (largoGrafo)))
           -1)
@@ -100,6 +107,7 @@
          (else
           (revisarPeso_aux2 n1 n2 (+ j 1) (cdr fila)))))
 
+;Función que retorna una lista con todos los ids de los nodos que hay actualmente en el grafo.
 >(define (listaIds)
    (cond ((null? grafo)
           '())
@@ -112,6 +120,7 @@
          (else
           (append (list i) (listaIds_aux (cdr rGrafo) (+ i 1))))))
 
+;Función que retorna un número indicando la cantidad de nodos que hay actualmente en el grafo.
 >(define (largoGrafo)
    (cond ((null? grafo)
           0)
@@ -124,6 +133,9 @@
          (else
           (+ 1 (largoGrafo_aux (cdr rGrafo))))))
 
+;Función que recibe una id de un nodo como argumento, y retorna una lista con 2 listas dentro de esta,
+;la primera indica todos los nodos adyacentes al nodo recibido (sin contarse a si mismo) y la segunda
+;indica los pesos que hay entre todos estos nodos adyacentes.
 >(define (infoNodo nodo)
    (cond ((or (< nodo 1) (> nodo (largoGrafo)))
           '())
@@ -144,6 +156,9 @@
          (else
           (infoNodo_aux2 nodo (cdr adj) (append pesos (list (revisarPeso nodo (car adj)))) rAdj))))
 
+;Función que se encarga de inicializar una lista que almacenará distancias para el algoritmo de Dijkstra,
+;recibe como argumentos una lista vacía (que será la retornada), un contador i (iniciando en 1), el
+;largo que es la cantidad de nodos del grafo y la id del nodo de inicio, la cual se le colocará una distancia de 0.
 >(define (iniciarDistancia distancia i largo inicio)
    (cond ((> i largo)
           distancia)
@@ -152,12 +167,18 @@
          (else
           (iniciarDistancia (append distancia (list 999)) (+ i 1) largo inicio))))
 
+;Función que se encarga de inicializar una lista que almacenará aquellos nodos que ya fueron visitados por el algoritmo
+;de Dijkstra, recibe como argumentos una lista vacía (que será la retornada), un contador i (iniciando en 1) y el largo
+;que es la cantidad de nodos del grafo.
 >(define (iniciarVisitados visitados i largo)
    (cond ((> i largo)
           visitados)
          (else
           (iniciarVisitados (append visitados (list 0)) (+ i 1) largo))))
 
+;Función que se encarga de inicializar una lista que almacenará el camino a seguir para llegar al destino utilizando la
+;ruta más corta, recibe como argumentos una lista vacía (que será la retornada), un contador i (iniciando en 1), el largo
+;que es la cantidad de nodos del grafo y el id del nodo de inicio.
 >(define (iniciarCamino camino i largo inicio)
    (cond ((> i largo)
           camino)
@@ -166,6 +187,8 @@
          (else
           (iniciarCamino (append camino (list 0)) (+ i 1) largo inicio))))
 
+;Función que se encarga de buscar un elemento de una lista, recibe como argumentos un contador i (iniciando en 1), la
+;posición en la que se encuentra el elemento deseado y la lista a la cuál se le aplicará la búsqueda del elemento.
 >(define (buscarElemento i posicion lista)
    (cond ((null? lista)
           -1)
@@ -174,6 +197,9 @@
          (else
           (buscarElemento (+ i 1) posicion (cdr lista)))))
 
+;Función que se encarga de modificar un elemento de una lista, recibe como argumentos el elemento nuevo que se insertará,
+;un contador i (iniciando en 1), la posición del elemento a ser cambiado, la lista a ser modificada y una nueva lista que será
+;la que contenga el elemento modificado (será la retornada).
 >(define (modificarElemento nuevoElemento i posicion lista nuevaLista)
    (cond ((null? lista)
           nuevaLista)
@@ -182,6 +208,10 @@
          (else
           (modificarElemento nuevoElemento (+ i 1) posicion (cdr lista) (append nuevaLista (list (car lista)))))))
 
+;Función que se encarga de modificar una lista dentro de una lista de listas (la lista de listas tendrá por defecto la lista de distancias,
+;la lista de visitados y la lista de caminos), recibe como argumentos la lista de listas, una lista vacía (que será la que contenga la nueva información),
+;un contador i (iniciando en 1), el número de la lista a realizar la modificación, el elemento a ser introducido en la lista y la posición donde se quiera
+;insertar.
 >(define (modificarLista listas nuevaListas i numeroDeLista nuevoElemento posicion)
    (cond ((null? listas)
           nuevaListas)
@@ -190,6 +220,8 @@
          (else
           (modificarLista (cdr listas) (append nuevaListas (list (car listas))) (+ i 1) numeroDeLista nuevoElemento posicion))))
 
+;Función de dijkstra que recibe dos ids de 2 nodos del grafo y se encarga de buscar la ruta más corta entre ellos, retornará una lista de listas con la distacia
+;más corta entre los nodos y otra lista con el camino a seguir para ir por la ruta más corta.
 >(define (dijkstra inicio fin)
    (cond ((or (< inicio 1) (< fin 1) (> inicio (largoGrafo)) (> fin (largoGrafo)))
           '())
