@@ -1,13 +1,37 @@
 #lang racket/gui
+;; ESTAS SON LAS VARIABLES PARA SABER DONDE SE ENCUENTRAN LOS NODOS
+;;(define nodos (hash "1" '("Cartago" 100 100) "2" '("SanJose" 400 400)))
+(define cantidad-nodos 1 )
+(define nodos (make-hash))
+;;Esta es la funcion que me actualiza el  hast table de nodos con sus nombres
+(define (agregar-nodo nombre x y)
+  (hash-set! nodos (number->string cantidad-nodos) (list nombre x y))
+  (set! cantidad-nodos (+ cantidad-nodos 1))
+  )
+;;Esta es la funcion que dibujara los nodos despues haber agregado uno o varios
+(define (dibujar-nodos cantidad-de-nodos-restantes)
+  (cond
+   [(not (zero?  cantidad-de-nodos-restantes ))
+    (define valores (hash-ref nodos (number->string cantidad-de-nodos-restantes)))
+    (define nombre-del-nodo(first valores))
+    (define posicion-x (first(rest valores) ))
+    (define posicion-y   (first(rest(rest valores) )))
+    (dibujar-nodo posicion-x posicion-y 100 mapa nombre-del-nodo)
+    (dibujar-nodos ( - cantidad-de-nodos-restantes 1))
+   
+  ]
+   [else  '()])
 
+  )
 ; ESTOS SON LOS COLORES QUE MANTENDRAN DISPONIUBLES PARA DIBUJAR 
 ;
+
 (define white (make-object color% "white"))
 (define black (make-object color% "black"))
 (define red   (make-object color% "red"))
 (define blue (make-object color% "blue"))
 
-  ; algunos la`ices y brochas
+  ; algunos lapices y brochas
 (define no-pen (make-object pen% "BLACK" 1 'transparent))
 (define no-brush (make-object brush% "BLACK" 'transparent))
 (define blue-brush (make-object brush% "BLUE" 'solid))
@@ -28,7 +52,6 @@
   (send dc set-brush yellow-brush)
   (send dc draw-ellipse x y radio radio)
   (dibujar-texto x (+ y (/ radio 2)) 1 canvas texto)
-  
   )
 
 ;; ESTE ES EL METODO PARA DIBUJAR LA LINEA DE LAS RUTAS 
@@ -37,7 +60,6 @@
   (define dc (send canvas get-dc))
   (send dc set-pen lapiz)
   (send dc draw-line x y x2 y2)
-  
 )
 
   ; Make a 300 x 300 frame
