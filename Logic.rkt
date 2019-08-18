@@ -33,6 +33,7 @@
 ;Función que se encarga de añadir un nodo al grafo
 ;Recibe como argumentos el id del grafo a agregar, una lista con las ids de los nodos a los que va a estar conectado,
 ;una lista con los pesos que van a tener cada arista entre nodos y una última lista indicando si la conexión va a ser bidireccional.
+
 >(define (anadirAlGrafo idAgregar ids pesos bi)
    (cond ((or (< idAgregar 1) (null? ids) (null? pesos) (null? bi))
           grafo)
@@ -139,7 +140,7 @@
    (cond ((or (< nodo 1) (> nodo (largoGrafo)))
           '())
          (else
-          (infoNodo_aux nodo (revisarAdyacentes 5) '()))))
+          (infoNodo_aux nodo (revisarAdyacentes nodo) '()))))
 
 >(define (infoNodo_aux nodo adj nAdj)
    (cond ((null? adj)
@@ -151,9 +152,17 @@
 
 >(define (infoNodo_aux2 nodo adj pesos rAdj)
    (cond ((null? adj)
-          (append (list rAdj) (list pesos)))
+          (infoNodo_aux3 nodo rAdj rAdj pesos '()))
          (else
           (infoNodo_aux2 nodo (cdr adj) (append pesos (list (revisarPeso nodo (car adj)))) rAdj))))
+
+>(define (infoNodo_aux3 nodo adj rAdj pesos bidireccion)
+   (cond ((null? adj)
+          (append (list rAdj) (list pesos) (list bidireccion)))
+         ((> (revisarPeso (car adj) nodo) 0)
+          (infoNodo_aux3 nodo (cdr adj) rAdj pesos (append bidireccion (list 1))))
+         (else
+          (infoNodo_aux3 nodo (cdr adj) rAdj pesos (append bidireccion (list 0))))))
 
 ;Función que se encarga de inicializar una lista que almacenará distancias para el algoritmo de Dijkstra,
 ;recibe como argumentos una lista vacía (que será la retornada), un contador i (iniciando en 1), el
