@@ -198,7 +198,7 @@
 
 >(define (dijkstra_aux inicio fin numNodos listas i)
    (cond ((= i numNodos)
-          (dijkstra_aux4 numNodos inicio fin (car listas) (caddr listas) '()))
+          (dijkstra_aux4 numNodos inicio fin (car listas) (caddr listas) '() (buscarElemento 1 fin (car listas))))
          (else
           (dijkstra_aux inicio fin numNodos (dijkstra_aux2 numNodos listas -1 999 1) (+ i 1)))))
 
@@ -218,11 +218,11 @@
          (else
           (dijkstra_aux3 numNodos listas nodoCercano distanciaCorta (revisarPeso nodoCercano (+ k 1)) (+ k 1)))))
 
->(define (dijkstra_aux4 numNodos inicio fin distancias caminos caminoFinal)
+>(define (dijkstra_aux4 numNodos inicio fin distancias caminos caminoFinal distanciaARecorrer)
    (cond ((= fin -1)
-          caminoFinal)
+          (cons (list distanciaARecorrer) (list caminoFinal)))
          (else
-          (dijkstra_aux4 numNodos inicio (buscarElemento 1 fin caminos) distancias caminos (append (list fin) caminoFinal)))))
+          (dijkstra_aux4 numNodos inicio (buscarElemento 1 fin caminos) distancias caminos (append (list fin) caminoFinal) distanciaARecorrer))))
 
 >(anadirAlGrafo 1 '(0) '(0) '(0))
 >(anadirAlGrafo 2 '(1) '(70) '(0))
@@ -230,9 +230,9 @@
 >(anadirAlGrafo 4 '(3 2) '(12 65) '(0 1))
 >(anadirAlGrafo 5 '(1 2 4) '(10 23 34) '(1 1 1))
 >(getGrafo)
-;>(revisarAdyacentes 5)
-;>(revisarPeso 3 4)
-;>(listaIds)
-;>(infoNodo 5)
-;>(largoGrafo)
+>(revisarAdyacentes 5)
+>(revisarPeso 3 4)
+>(listaIds)
+>(infoNodo 5)
+>(largoGrafo)
 >(dijkstra 3 4)
