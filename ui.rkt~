@@ -1,110 +1,6 @@
 #lang racket/gui
 (require 2htdp/image)
-(require racket/include)
-(require "Logic.rkt")
-;_____________________________________________________________Funciones Para Graficar el Mapa
 
-(define (lugar-numero lugar contador)
-  (define elemento (first(hash-ref nodos (number->string contador))))
-  (cond
-    [(eq? contador cantidad-nodos)
-     ]
-    
-    [(equal?  lugar  elemento )
-      contador]
-    [else
-     (lugar-numero  lugar (+ contador 1))]
-    ))
-;; ESTAS SON LAS VARIABLES PARA SABER DONDE SE ENCUENTRAN LOS NODOS
-;;(define nodos (hash "1" '("Cartago" 100 100) "2" '("SanJose" 400 400)))
-(define cantidad-nodos 1 )
-(define nodos (make-hash))
-;;Esta es la funcion que me actualiza el  hast table de nodos con sus nombres
-(define (agregar-nodo nombre   ids pesos bi )
-  (define valor1 ids)
-  (define valor2 pesos)
-  (define valor bi)
-  (cond
-    [(eq? cantidad-nodos 1)
-     (anadirAlGrafo cantidad-nodos   '(0) '(0) '(0))
-     (hash-set! nodos (number->string cantidad-nodos) (list nombre  (random 700)  (random 700)))
-     (set! cantidad-nodos (+ cantidad-nodos 1))
-     ]
-    [else
-     (quote ids)
-     (anadirAlGrafo cantidad-nodos    ids pesos  bi)
-     (hash-set! nodos (number->string cantidad-nodos) (list nombre  (random 700)  (random 700)))
-     (set! cantidad-nodos (+ cantidad-nodos 1))] )
-  )
-;;Esta es la funcion que dibujara los nodos despues haber agregado uno o varios
-(define (dibujar-nodos cantidad-de-nodos-restantes)
-  (cond
-   [(not (zero?  cantidad-de-nodos-restantes ))
-    (define valores (hash-ref nodos (number->string cantidad-de-nodos-restantes)))
-    (define nombre-del-nodo(first valores))
-    (define posicion-x (first(rest valores) ))
-    (define posicion-y   (first(rest(rest valores) )))
-    (dibujar-nodo posicion-x posicion-y 100 canvas nombre-del-nodo)
-    (dibujar-nodos ( - cantidad-de-nodos-restantes 1))
-  ]
-   [else  '()])
-  )
-;;Funcion necesarias para obtener x y de un nodo
-(define (dame-posiciones nodo-buscar)
-   (rest(hash-ref nodos (number->string nodo-buscar)))
-  )
-;;Esta funcion es la dibujara la mejor ruta
-(define (dibujar-mejor-ruta  lista-mejores)
-  (cond
-    [(not(null?  (rest lista-mejores)))
-     (define nodo-inicial (first lista-mejores))
-     (define nodo-final (first(rest lista-mejores)))
-     (define pos-inicial (dame-posiciones nodo-inicial))
-     (define pos-final (dame-posiciones nodo-final))
-     (dibujar-linea (first pos-inicial) (first(rest pos-inicial))(first pos-final)(first(rest pos-final)) canvas "RED" 13)
-     (dibujar-mejor-ruta (rest lista-mejores))
-     ]
-    [else '()]))
-; ESTOS SON LOS COLORES QUE MANTENDRAN DISPONIUBLES PARA DIBUJAR 
-;
-(define white (make-object color% "white"))
-(define black (make-object color% "black"))
-(define red   (make-object color% "red"))
-(define blue (make-object color% "blue"))
-
-  ; algunos lapices y brochas
-(define no-pen (make-object pen% "BLACK" 1 'transparent))
-(define no-brush (make-object brush% "BLACK" 'transparent))
-(define blue-brush (make-object brush% "BLUE" 'solid))
-(define yellow-brush (make-object brush% "YELLOW" 'solid))
-(define red-pen (make-object pen% "RED" 2 'solid))
-
-;;ESTE ES EL METODO QUE DIBUJA UN TEXTO EN EL CANVAS
-(define (dibujar-texto  x y  size canvas texto )
-  (define dc (send canvas get-dc))
-  (send dc set-scale size size)
-  (send dc set-text-foreground "blue")
-  (send dc draw-text texto x y)
-)
-;;ESTE ES EL METODO  QUE REALIZA LOS NODOS CON CIERTO TAMAÑO Y CIERTO  TEXTO EN ELLOS 
-(define (dibujar-nodo x y radio canvas texto)
-  (define dc (send canvas get-dc))
-  (send dc set-pen no-pen)
-  (send dc set-brush yellow-brush)
-  (send dc draw-ellipse x y radio radio)
-  (dibujar-texto x (+ y (/ radio 2)) 1 canvas texto)
-  )
-
-;; ESTE ES EL METODO PARA DIBUJAR LA LINEA DE LAS RUTAS 
-(define (dibujar-linea x y x2 y2 canvas  color grosor)
-  (define lapiz (instantiate pen% (color grosor 'solid)))
-  (define dc (send canvas get-dc))
-  (send dc set-pen lapiz)
-  (send dc draw-line x y x2 y2)
-)
-
-;------------------------------------------------------------------------------------------------------
-;;(require "Rutas Panel.rkt")
 ;Blank bitmap for resize
 (define bitmap-blank
   (lambda [[w 0] [h #false] #:backing-scale [backing-scale 2.0]]
@@ -217,10 +113,9 @@
 ; Changes frame from MapScreen to ConfigurationScreen
 (define (toConfigFromMapScreen)
   (send mapScreen show #f)
-  (send configScreen show #t)
-  )
+  (send configScreen show #t))
 
-(define msgPesos (new message% [parent mapScreen]
+(define msgPesos (new message% [parent configScreen]
                           [label (string-append "Peso de la ruta: " "(pesoRuta-string)")]))
 
 ; Changes frame from ConfigurationScreen to MapScreen button
@@ -229,16 +124,13 @@
              [callback (lambda (button event)
                          (toConfigFromMapScreen))])
 
-;;_________________________________________________________________________________________________________________
-(define (better-route )
-  
-  (define  inicio (send search-box get-value ))
-  (define  fin (send search-box2 get-value ))
-  (set! inicio (lugar-numero inicio 1))
-  (set! fin (lugar-numero fin 1))
-  ;;(define rutas  dis '((1 3 2) (2 1 3)))
-  (dibujar-mejor-ruta (cadr(dijkstra inicio fin))))
-
+; Draw lines in MapScreen canvas
+(define (dibujar-linea x y x2 y2 canvas  color grosor)
+  (define lapiz (instantiate pen% (color grosor 'solid)))
+  (define dc (send canvas get-dc))
+  (send dc set-pen lapiz)
+  (send dc draw-line x y x2 y2)
+)
 
 ";______________________________________________________________________________________________________________Configuration Screen;"
 
@@ -249,7 +141,6 @@
 
 ; Changes Frame to MapScreen from ConfigurationScreen
 (define (toMapFromConfigScreen)
-  (dibujar-nodos (- cantidad-nodos 1))
   (send mapScreen show #t)
   (send configScreen show #f))
 
@@ -266,7 +157,7 @@
 (new button% [parent configScreen]
              [label "Crear ruta"]
              [callback (lambda (button event)
-                         (better-route))])
+                         (send msg set-label "Holaaaa perros"))])
 
 (define espacio (new message% [parent configScreen]
                           [label "_____________________________________________________________________________________"]))
@@ -329,7 +220,7 @@
 (new button% [parent configScreen]
              [label "Crear Lugar"]
              [callback (lambda (button event)
-                         (validacionNodos))])
+                         (dibujar-linea 100 200 20 30 canvas "BLUE" 13))])
 
 (define espacio6 (new message% [parent configScreen]
                           [label "_____________________________________________________________________________________"]))
@@ -342,19 +233,22 @@
 
 ; Returns from ConfigScreen to MapScreen
 (new button% [parent configScreen]
+             [label "Actualizar mapa"]
+             [callback (lambda (button event)
+                         (toMapFromConfigScreen))])
+
+; Returns from ConfigScreen to MapScreen
+(new button% [parent configScreen]
              [label "Regresar al Mapa"]
              [callback (lambda (button event)
                          (toMapFromConfigScreen))])
 
 ";___________________________________________________________________________________________________Conexion de Logica con interfaz;"
 
-
 ; Validacion para que haya informacion en los text-field y no crear nodos sin informacion
 (define (validacionNodos)
-  (define valor (send search-box3 get-value) )
-  (cond 
-        ((equal? (send search-box4 get-value) "" )
-         (agregar-nodo valor 1 2 3))
+  (cond ((equal? (send search-box4 get-value) "")
+         "Nada que hacer")
         ((equal? (send search-box5 get-value) "")
          (crearNodo1conexion))
         ((equal? (send search-box6 get-value) "")
@@ -388,12 +282,9 @@
   (cond ((equal? (send search-box4.1 get-value) "")
          "Nada que hacer")
         (else
-         (define pos (list(lugar-numero (send search-box4 get-value) 1)) )
-         (define pesos (list (string->number(send search-box4.1 get-value))))
-         (define  binario  (list (boolCheck-box1)))
-          (agregar-nodo (send search-box3 get-value); String
-                        (list(lugar-numero (send search-box4 get-value) 1)); list al que me quiero conectar
-                        (list (string->number(send search-box4.1 get-value))); list peso
+         (anadirAlGrafo (metodo-Sahid (send search-box3 get-value)); int el que estoy creando
+                        (list (metodo-Sahid (send search-box4 get-value))); list al que me quiero conectar
+                        (list (metodo-Sahid (send search-box4.1 get-value))); list peso
                         (list (boolCheck-box1)))))); list direccion
 
 ; Crear conexion entre el nodo nuevo y dos existentes
@@ -401,13 +292,13 @@
   (cond ((equal? (send search-box5.1 get-value) "")
          "Nada que hacer")
         (else
-          (agregar-nodo (send search-box3 get-value); int el que estoy creando
+         (anadirAlGrafo (metodo-Sahid (send search-box3 get-value)); int el que estoy creando
                         
-                        (list  (lugar-numero(send search-box4 get-value )1)
-                               (lugar-numero(send search-box5 get-value )1)); list al que me quiero conectar
+                        (list (metodo-Sahid (send search-box4 get-value))
+                              (metodo-Sahid (send search-box5 get-value))); list al que me quiero conectar
                         
-                        (list ( string->number(send search-box4.1 get-value))
-                              ( string->number(send search-box5.1 get-value))); list peso
+                        (list (metodo-Sahid (send search-box4.1 get-value))
+                              (metodo-Sahid (send search-box5.1 get-value))); list peso
                         
                         (list (boolCheck-box1) (boolCheck-box2)))))); list direccion
 
@@ -415,20 +306,19 @@
 (define (crearNodo3conexiones)
   (cond ((equal? (send search-box6.1 get-value) "")
          "Nada que hacer")
-        
         (else
-          (agregar-nodo (send search-box3 get-value); int el que estoy creando
+         (anadirAlGrafo (metodo-Sahid (send search-box3 get-value)); int el que estoy creando
                         
-                         (list  (lugar-numero(send search-box4 get-value )1)
-                                (lugar-numero(send search-box5 get-value )1)
-                                (lugar-numero(send search-box6 get-value )1)); list al que me quiero conectar
+                        (list (metodo-Sahid (send search-box4 get-value))
+                              (metodo-Sahid (send search-box5 get-value))
+                              (metodo-Sahid (send search-box6 get-value))); list al que me quiero conectar
                         
-                         (list ( string->number(send search-box4.1 get-value))
-                               ( string->number(send search-box5.1 get-value))
-                              ( string->number(send search-box6.1 get-value)));; list peso
+                        (list (metodo-Sahid (send search-box4.1 get-value))
+                              (metodo-Sahid (send search-box5.1 get-value))
+                              (metodo-Sahid (send search-box6.1 get-value))); list peso
                         
-                        (list (boolCheck-box1) (boolCheck-box2) (boolCheck-box3))))
-        )); list direccion
+                        (list (boolCheck-box1) (boolCheck-box2) (boolCheck-box3)))))); list direccion
+
 ;______________________________________________________________________________________________________________________Run;
 
 (showMenu #t)
