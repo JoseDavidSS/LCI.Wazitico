@@ -36,6 +36,48 @@
      (hash-set! nodos (number->string cantidad-nodos) (list nombre  (random 700)  (random 700)))
      (set! cantidad-nodos (+ cantidad-nodos 1))] )
   )
+(define (dibujar-rutas cantidad-nodos )
+  (cond
+    [(zero? cantidad-nodos )
+     '()
+     ]
+    [else
+     (dibujar-rutas-aux2 cantidad-nodos  (car(infoNodo cantidad-nodos)) (cadr(infoNodo cantidad-nodos)) (cadr(cdr (infoNodo cantidad-nodos) )) (-(largo (car (infoNodo cantidad-nodos) ))1))
+     (dibujar-rutas (- cantidad-nodos 1))
+     ] 
+ )
+)
+(define (dibujar-rutas-aux2  nodo  ids pesos bi size )
+  (cond
+    [(and(not(equal? size -1)) )
+     ;;(hash-ref nodos (number->string cantidad-de-nodos-restantes))
+     (define id (list-ref ids  size))
+     (define peso (list-ref  pesos size))
+     (define direccion (list-ref  bi size) )
+     
+     (define xInicial (+(cadr(hash-ref nodos (number->string nodo))) 50))
+     (define yInicial (+ (cadr(cdr(hash-ref nodos (number->string nodo))))50))
+     (define xFinal (+(cadr(hash-ref nodos (number->string id)))50))
+     (define yFinal (+ (cadr(cdr(hash-ref nodos (number->string id))))50))
+     (define xTexto (- xInicial 50))
+     (define yTexto (- yInicial 50))
+     (cond
+       [(zero? direccion)
+        (dibujar-linea xInicial yInicial xFinal yFinal canvas "VIOLET" 14)
+        (dibujar-texto xTexto yTexto 1 canvas (number->string peso))
+        (dibujar-rutas-aux2  nodo  ids pesos bi (- size 1) )
+        ]
+       [else
+        (dibujar-linea xInicial yInicial xFinal yFinal canvas "PURPLE" 14)
+        (dibujar-texto xTexto yTexto 1 canvas (number->string peso))
+        (dibujar-rutas-aux2  nodo  ids pesos bi (- size 1) )]
+       )
+     ]
+    
+    
+  )
+  )
+
 ;;Esta es la funcion que dibujara los nodos despues haber agregado uno o varios
 (define (dibujar-nodos cantidad-de-nodos-restantes)
   (cond
@@ -250,6 +292,7 @@
 ; Changes Frame to MapScreen from ConfigurationScreen
 (define (toMapFromConfigScreen)
   (dibujar-nodos (- cantidad-nodos 1))
+  (dibujar-rutas(- cantidad-nodos 1))
   (send mapScreen show #t)
   (send configScreen show #f))
 
