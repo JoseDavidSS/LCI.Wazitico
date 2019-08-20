@@ -1,5 +1,107 @@
 #lang racket/base
 
+;_____________________________________________________________Funcion multiples rutas
+
+(define (largo lista)
+  (cond
+    [(null? lista)
+     0]
+    [else
+     (+ 1 (largo (cdr lista)))]))
+(define (agregar-inicio inicio lista)
+  (cond
+    [(null? lista)
+     '()]
+    [else
+     (append (list(append (list inicio ) (car lista))) (agregar-inicio inicio (cdr lista)))
+     ]
+    )
+  )
+(define (dameTodasRutas inicio fin  )
+  
+  (eliminar-repetidos(append (dijkstra inicio  fin )(full-rutas inicio fin  1 (largoGrafo)))
+  )
+  )
+(define (full-rutas inicio fin contador cantidad-nodos)
+  (cond
+    [(equal? contador cantidad-nodos)
+     '()]
+    [(or(equal? contador inicio)(equal? contador fin)(not(existe? contador (car(infoNodo inicio)))))
+     (full-rutas inicio fin (+ contador 1) cantidad-nodos)
+     ]
+    [else
+     (append  (todas-rutas inicio fin(car(infoNodo inicio))) (full-rutas inicio fin (+ contador 1) cantidad-nodos))]
+    )
+  )
+
+(define ( todas-rutas inicio fin  adyacentes  )
+  (cond
+    [(null? adyacentes)
+     '()]
+    [else
+     (eliminar-repetidos(append  (list(append (list inicio)(list-ref(dijkstra (car adyacentes) fin) 1))) (todas-rutas  inicio fin ( cdr adyacentes))  ))]
+    )
+  )
+(define ( eliminar-vueltas  nodo inicio fin )
+  (eliminar2 nodo (todas-rutas inicio fin (car(infoNodo inicio))))
+  )
+(define (eliminar-repetidos   lista )
+  (cond
+    [
+     (null? lista)
+     '()
+     ]
+    [else
+     (append (list(car lista) ) (eliminar-repetidos  (eliminar (car lista) lista)))
+     ]))
+;**************************************
+(define (repetido? elemento lista)
+  (cond
+  [(null? lista)
+   0
+   ]
+  [(eq? elemento (car lista))
+   (+ 1  (repetido? elemento (cdr lista)))]
+  [else
+   (repetido? elemento (cdr lista))]
+  
+   )
+  )
+(define (existe? elemento lista)
+  (cond
+  [(null? lista)
+   #f
+   ]
+  [(eq? elemento (car lista))
+   #t]
+  [else
+   (existe? elemento (cdr lista))]
+  
+   )
+  )
+(define (eliminar elemento lista)
+  (cond
+    [(null? lista)
+     '()
+     ]
+    [(equal? elemento (car lista))
+     (eliminar elemento (cdr lista))
+     ]
+    [else
+     (cons(car lista) (eliminar elemento (cdr lista)))]
+    ))
+(define (eliminar2 elemento lista)
+  (cond
+    [(null? lista)
+     '()
+     ]
+    [(existe? elemento (car lista))
+     (eliminar2 elemento (cdr lista))
+     ]
+    [else
+     (cons(car lista) (eliminar2 elemento (cdr lista)))]
+    ))
+;;__________________________________________________
 ;Variable del grafo
 >(define grafo null)
 
