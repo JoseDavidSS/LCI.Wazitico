@@ -59,16 +59,22 @@
      (define yInicial (+ (cadr(cdr(hash-ref nodos (number->string nodo))))50))
      (define xFinal (+(cadr(hash-ref nodos (number->string id)))50))
      (define yFinal (+ (cadr(cdr(hash-ref nodos (number->string id))))50))
-     (define xTexto (- xInicial 50))
-     (define yTexto (- yInicial 50))
+     (define xTexto ( + xInicial (/(-  xFinal xInicial)2) 10) )
+     (define yTexto (+ yInicial (/(-  yFinal yInicial)2)10))
+     (define xCruz ( + xInicial (/(-  xFinal xInicial)6) ) )
+     (define yCruz (+ yInicial (/(-  yFinal yInicial)6)))
      (cond
        [(zero? direccion)
         (dibujar-linea xInicial yInicial xFinal yFinal canvas "VIOLET" 14)
+        (dibujar-linea (- xCruz 10 )(- yCruz 10)(+ xCruz 10) (+ yCruz 10) canvas "VIOLET" 10)
+        (dibujar-linea (- xCruz 10 )(+ yCruz 10)(+ xCruz 10) (- yCruz 10) canvas "VIOLET" 10)
         (dibujar-texto xTexto yTexto 1 canvas (number->string peso))
         (dibujar-rutas-aux2  nodo  ids pesos bi (- size 1) )
         ]
        [else
         (dibujar-linea xInicial yInicial xFinal yFinal canvas "PURPLE" 14)
+        ;;(dibujar-linea (- xCruz 10 )(- yInicial 10)(+ xCruz 10) (+ yInicial 10) canvas "PURPLE" 10)
+        ;;(dibujar-linea (- xCruz 10 )(+ yCruz 10)(+ xCruz 10) (- yCruz 10) canvas "PURPLE" 10)
         (dibujar-texto xTexto yTexto 1 canvas (number->string peso))
         (dibujar-rutas-aux2  nodo  ids pesos bi (- size 1) )]
        )
@@ -103,7 +109,7 @@
      (define nodo-final (first(rest lista-mejores)))
      (define pos-inicial (dame-posiciones nodo-inicial))
      (define pos-final (dame-posiciones nodo-final))
-     (dibujar-linea (first pos-inicial) (first(rest pos-inicial))(first pos-final)(first(rest pos-final)) canvas "RED" 13)
+     (dibujar-linea (+(first pos-inicial) 50) (+(first(rest pos-inicial)) 50) (+(first pos-final) 50) (+(first(rest pos-final)) 50) canvas "RED" 25)
      (dibujar-mejor-ruta (rest lista-mejores))
      ]
     [else '()]))
@@ -279,7 +285,10 @@
   (set! inicio (lugar-numero inicio 1))
   (set! fin (lugar-numero fin 1))
   ;;(define rutas  dis '((1 3 2) (2 1 3)))
-  (dibujar-mejor-ruta (cadr(dijkstra inicio fin))))
+  (dibujar-mejor-ruta (cadr(dijkstra inicio fin)))
+  ;;(toMapFromConfigScreen #t)
+  )
+
 
 
 ";______________________________________________________________________________________________________________Configuration Screen;"
@@ -290,11 +299,27 @@
                                      [height 625]))
 
 ; Changes Frame to MapScreen from ConfigurationScreen
-(define (toMapFromConfigScreen)
-  (dibujar-nodos (- cantidad-nodos 1))
-  (dibujar-rutas(- cantidad-nodos 1))
-  (send mapScreen show #t)
-  (send configScreen show #f))
+(define (toMapFromConfigScreen bandera)
+  (cond
+    [(eq? bandera #t)
+     (define dc (send canvas get-dc))
+     (send dc clear)
+     (better-route)
+     (dibujar-nodos (- cantidad-nodos 1))
+     (dibujar-rutas(- cantidad-nodos 1))
+     (send mapScreen show #t)
+     (send configScreen show #f)
+    ]
+    [else
+     (define dc (send canvas get-dc))
+     (send dc clear)
+     (dibujar-nodos (- cantidad-nodos 1))
+     (dibujar-rutas(- cantidad-nodos 1))
+     (send mapScreen show #t)
+     (send configScreen show #f)
+     ]
+  ))
+  
 
 (define msg (new message% [parent configScreen]
                           [label "Configuración de Ruta y Nodos"]))
@@ -309,7 +334,7 @@
 (new button% [parent configScreen]
              [label "Crear ruta"]
              [callback (lambda (button event)
-                         (better-route))])
+                         ((toMapFromConfigScreen #t)))])
 
 (define espacio (new message% [parent configScreen]
                           [label "_____________________________________________________________________________________"]))
@@ -387,7 +412,7 @@
 (new button% [parent configScreen]
              [label "Regresar al Mapa"]
              [callback (lambda (button event)
-                         (toMapFromConfigScreen))])
+                         (toMapFromConfigScreen #f))])
 
 ";___________________________________________________________________________________________________Conexion de Logica con interfaz;"
 
