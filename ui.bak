@@ -178,9 +178,16 @@
                    [style '(no-resize-border)]))
 
 ; Load images
-
-(define fondo (make-object bitmap% "Imagenes/fondo.png"))
-(define botonInicio (make-object bitmap% "Imagenes/iniciar.png"))
+(define arcadiabayButtonIcon (make-object bitmap% "assets/arcadiabay_button.png"))
+(define arcadiabay_map (make-object bitmap% "assets/maps/arcadiabay_map.png"))
+(define background (make-object bitmap% "/home/jose/Desktop/Racket/Wazecheme/assets/start_button.png"))
+(define hyruleButtonIcon (make-object bitmap% "assets/hyrule_button.png"))
+(define hyrule_map (make-object bitmap% "assets/maps/hyrule_map.png"))
+(define logo_namePic (make-object bitmap% "assets/logo_name.png"))
+(define logoPic (make-object bitmap% "assets/logo.png"))
+(define namePic (make-object bitmap% "assets/name.png"))
+(define selectBackground (make-object bitmap% "assets/background_citySelect.png"))
+(define startButtonIcon (make-object bitmap% "/home/jose/Desktop/Racket/Wazecheme/assets/start_button.png"))
 
 ";_______________________________________________________________________________________________________________________Menu Screen;"
 
@@ -190,15 +197,6 @@
                              [vert-margin 0]
                              [spacing 0]
                              [alignment '(center center)]))
-
-(define menuPanel2 (new panel% [parent menuScreen]
-                             [border 0]
-                             [vert-margin 0]
-                             [spacing 0]
-                             [alignment '(center center)]))
-
-(define fondos (new message% [parent menuPanel]
-                          [label (bitmap-scale fondo 0.6)]))
 
 ; Control menu frame show with boolean value
 (define (showMenu bool)
@@ -213,8 +211,8 @@
   (showMenu #f))
 
 ; Changes from MenuScreen to MapScreen
-(new button% [parent menuPanel2]
-             [label (bitmap-scale botonInicio 0.6)]
+(new button% [parent menuPanel]
+             [label (bitmap-scale startButtonIcon 0.6)]
              [callback (lambda (button event)
                          (toMapFromMenuScreen))])
 
