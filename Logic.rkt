@@ -3,37 +3,9 @@
 ;Variable del grafo
 >(define grafo null)
 
-;Función que se encarga de retornar el grafo actual
->(define (getGrafo)
-   (cond ((null? grafo)
-         (getGrafo_aux 1 1 '()))
-         (else
-          grafo)))
-
->(define (getGrafo_aux i j fila)
-   (cond ((= i 16)
-          grafo)
-         ((= j 16)
-          (begin
-            (set! grafo (append grafo (list fila)))
-            (getGrafo_aux (+ i 1) 1 '())))
-         ((= i j)
-          (getGrafo_aux i (+ j 1) (append fila (list 0))))
-         ((or (and (= i 1) (= j 2)) (and (= i 6) (= j 11)) (and (= i 7) (= j 2)) (and (= i 8) (= j 7)) (and (= i 10) (= j 13)) (and (= i 12) (= j 9)) (and (= i 13) (= j 10)))
-          (getGrafo_aux i (+ j 1) (append fila (list 3))))
-         ((or (and (= i 1) (= j 3)) (and (= i 3) (= j 1)) (and (= i 8) (= j 9)) (and (= i 9) (= j 8)) (and (= i 10) (= j 9)) (and (= i 11) (= j 10)))
-          (getGrafo_aux i (+ j 1) (append fila (list 5))))
-         ((or (and (= i 2) (= j 3)) (and (= i 3) (= j 2)) (and (= i 3) (= j 5)) (and (= i 4) (= j 5)) (and (= i 4) (= j 6)) (and (= i 5) (= j 4)) (and (= i 8) (= j 12)) (and (= i 10) (= j 5)) (and (= i 11) (= j 13)) (and (= i 12) (= j 8)) (and (= i 12) (= j 14)) (and (= i 13) (= j 15)) (and (= i 14) (= j 12)))
-          (getGrafo_aux i (+ j 1) (append fila (list 6))))
-         ((and (= i 15) (= j 14))
-          (getGrafo_aux i (+ j 1) (append fila (list 15))))
-         (else
-          (getGrafo_aux i (+ j 1) (append fila (list -1))))))
-
 ;Función que se encarga de añadir un nodo al grafo
-;Recibe como argumentos el id del grafo a agregar, una lista con las ids de los nodos a los que va a estar conectado,
+;Recibe como argumentos el id del nodo a agregar, una lista con las ids de los nodos a los que va a estar conectado,
 ;una lista con los pesos que van a tener cada arista entre nodos y una última lista indicando si la conexión va a ser bidireccional.
-
 >(define (anadirAlGrafo idAgregar ids pesos bi)
    (cond ((or (< idAgregar 1) (null? ids) (null? pesos) (null? bi))
           grafo)
@@ -133,9 +105,10 @@
          (else
           (+ 1 (largoGrafo_aux (cdr rGrafo))))))
 
-;Función que recibe una id de un nodo como argumento, y retorna una lista con 2 listas dentro de esta,
-;la primera indica todos los nodos adyacentes al nodo recibido (sin contarse a si mismo) y la segunda
-;indica los pesos que hay entre todos estos nodos adyacentes.
+;Función que recibe una id de un nodo como argumento, y retorna una lista con 3 listas dentro de esta,
+;la primera indica todos los nodos adyacentes al nodo recibido (sin contarse a si mismo), la segunda
+;indica los pesos que hay entre todos estos nodos adyacentes y la tercera indica si hay nodos bidireccionales
+;entre el nodo recibido y los adyacentes a este.
 >(define (infoNodo nodo)
    (cond ((or (< nodo 1) (> nodo (largoGrafo)))
           '())
