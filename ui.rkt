@@ -210,6 +210,7 @@
 
 (define fondo (make-object bitmap% "Imagenes/fondo.png"))
 (define botonInicio (make-object bitmap% "Imagenes/iniciar.png"))
+(define botonExtras (make-object bitmap% "Imagenes/extras.png"))
 
 ";_______________________________________________________________________________________________________________________Menu Screen;"
 
@@ -221,6 +222,12 @@
                              [alignment '(center center)]))
 
 (define menuPanel2 (new panel% [parent menuScreen]
+                             [border 0]
+                             [vert-margin 0]
+                             [spacing 0]
+                             [alignment '(center center)]))
+
+(define menuPanel23 (new panel% [parent menuScreen]
                              [border 0]
                              [vert-margin 0]
                              [spacing 0]
@@ -246,6 +253,12 @@
              [label (bitmap-scale botonInicio 0.6)]
              [callback (lambda (button event)
                          (toMapFromMenuScreen))])
+
+; Changes from MenuScreen to MapScreen
+(new button% [parent menuPanel23]
+             [label (bitmap-scale botonExtras 0.3)]
+             [callback (lambda (button event)
+                         (toExtraFromMenuScreen))])
 
 ";________________________________________________________________________________________________________________________Map Screen;"
 (define listaChoice null)
@@ -535,6 +548,60 @@
                         
                         (list (boolCheck-box1) (boolCheck-box2) (boolCheck-box3))))
         )); list direccion
+;______________________________________________________________________________________________________________________Extra;
+
+(require racket/gui map-widget)
+(define toplevel (new frame% [label "Map Demo"] [width 800] [height 800]))
+(define panelMapa (new panel% [parent toplevel]
+                             [border 0]
+                             [vert-margin 0]
+                             [spacing 0]
+                             [alignment '(center center)]))
+(define map (new map-widget% [parent panelMapa]))
+
+(define (go)
+  (send map move-to ( vector(string->number(send search-boxx get-value)) (string->number (send search-boxx2 get-value)                                                                                                      
+  ))))
+(define (irCasa)
+   (send map set-track-current-location #t)
+  )
+(define (casa)
+  (define color (make-color 0 135 36))
+  (send map add-marker( vector(string->number(send search-boxx get-value)) (string->number (send search-boxx2 get-value))) "Casa "  1 color)
+  (send map set-current-location  ( vector(string->number(send search-boxx get-value)) (string->number (send search-boxx2 get-value))))
+  (send map set-track-current-location #t)
+  )
+(define (zoom)
+(send map set-zoom-level (string->number(send search-boxx3 get-value))                                                                                         )
+ )
+(new button% [parent toplevel]
+             [label "Ir a las cordenadas"]
+             [callback (lambda (button event)
+                         (go))])
+(define search-boxx (new text-field% [parent toplevel]
+                                    [label "Latitud     "]))
+(define search-boxx2 (new text-field% [parent toplevel]
+                               [label "Longitud     "]))
+(new button% [parent toplevel]
+             [label "Escoger como casa"]
+             [callback (lambda (button event)
+                         (casa))])
+(new button% [parent toplevel]
+             [label "Ir a casa"]
+             [callback (lambda (button event)
+                         (irCasa))]) 
+(define search-boxx3 (new text-field% [parent toplevel]
+                                    [label "Zoom (los valor van del 1 al 16) "]))
+(new button% [parent toplevel]
+             [label "Cambiar Zoom"]
+             [callback (lambda (button event)
+                         (zoom))])
+
+; Changes Frame to MapScreen from ConfigurationScreen
+(define (toExtraFromMenuScreen)
+  (send toplevel show #t)
+  (showMenu #f))
+
 ;______________________________________________________________________________________________________________________Run;
 
 (showMenu #t)
