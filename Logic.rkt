@@ -1,6 +1,6 @@
 #lang racket/base
 
-;_____________________________________________________________Funcion multiples rutas
+;_____________________________________________________________Funcion  que dice el largo de una lista
 
 (define (largo lista)
   (cond
@@ -8,6 +8,7 @@
      0]
     [else
      (+ 1 (largo (cdr lista)))]))
+;_____________________________________________________________Funcion  que agregra una sublista al incio
 (define (agregar-inicio inicio lista)
   (cond
     [(null? lista)
@@ -17,11 +18,13 @@
      ]
     )
   )
+;_____________________________________________________________Funcion  que principal de dar todas las rutas posibles
 (define (dameTodasRutas inicio fin  )
   
   (eliminar-repetidos(append (dijkstra inicio  fin )(full-rutas inicio fin  1 (largoGrafo)))
   )
   )
+;_____________________________________________________________Funcion aux para todas las rutas
 (define (full-rutas inicio fin contador cantidad-nodos)
   (cond
     [(equal? contador cantidad-nodos)
@@ -33,7 +36,7 @@
      (append  (todas-rutas inicio fin(car(infoNodo inicio))) (full-rutas inicio fin (+ contador 1) cantidad-nodos))]
     )
   )
-
+;_____________________________________________________________Funcion aux para todas las rutas
 (define ( todas-rutas inicio fin  adyacentes  )
   (cond
     [(null? adyacentes)
@@ -42,9 +45,12 @@
      (eliminar-repetidos(append  (list(append (list inicio)(list-ref(dijkstra (car adyacentes) fin) 1))) (todas-rutas  inicio fin ( cdr adyacentes))  ))]
     )
   )
+;_____________________________________________________________Funcion aux para todas las rutas que elimina rutas que se devuelvan
 (define ( eliminar-vueltas  nodo inicio fin )
   (eliminar2 nodo (todas-rutas inicio fin (car(infoNodo inicio))))
   )
+;_____________________________________________________________Funcion aux para sacar todas las rutas y eliminar las repetidas
+
 (define (eliminar-repetidos   lista )
   (cond
     [
@@ -54,7 +60,8 @@
     [else
      (append (list(car lista) ) (eliminar-repetidos  (eliminar (car lista) lista)))
      ]))
-;**************************************
+;_____________________________________________________________Funcion que dice si un elemento esta en una lista
+*
 (define (repetido? elemento lista)
   (cond
   [(null? lista)
@@ -67,6 +74,8 @@
   
    )
   )
+;_____________________________________________________________Funcion que dice si un elemento existe en una lista
+
 (define (existe? elemento lista)
   (cond
   [(null? lista)
@@ -79,6 +88,7 @@
   
    )
   )
+;_____________________________________________________________Funcion que elimina un elemento de una lista
 (define (eliminar elemento lista)
   (cond
     [(null? lista)
@@ -90,6 +100,8 @@
     [else
      (cons(car lista) (eliminar elemento (cdr lista)))]
     ))
+;_____________________________________________________________Funcion que elimina una sub lista  de una lista
+
 (define (eliminar2 elemento lista)
   (cond
     [(null? lista)

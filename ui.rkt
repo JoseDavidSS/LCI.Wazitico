@@ -11,6 +11,7 @@
   (new brush%
 [color (make-object color% 0 0 0)]))
 
+;_____________________________________________________________Funcion que  pasa de un nombre a su valor numerico
 
 (define (lugar-numero lugar contador)
   (define elemento (first(hash-ref nodos (number->string contador))))
@@ -23,6 +24,7 @@
     [else
      (lugar-numero  lugar (+ contador 1))]
     ))
+
 ;; ESTAS SON LAS VARIABLES PARA SABER DONDE SE ENCUENTRAN LOS NODOS
 ;;(define nodos (hash "1" '("Cartago" 100 100) "2" '("SanJose" 400 400)))
 (define cantidad-nodos 1 )
@@ -55,6 +57,8 @@
      ] 
  )
 )
+;_____________________________________________________________Funcion aux que ayuda a  dibujar todas las rutas del grafo
+
 (define (dibujar-rutas-aux2  nodo  ids pesos bi size )
   (cond
     [(and(not(equal? size -1)) )
